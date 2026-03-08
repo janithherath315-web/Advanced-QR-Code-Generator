@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced QR Code Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #121212;
+            color: #ffffff;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+        }
+
+        #themeToggler {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            font-size: 2rem;
+            background: none;
+            border: none;
+            color: #007bff;
+        }
+
+        .qr-input-section {
+            margin: 2rem 0;
+        }
+
+        #qrText {
+            width: 100%;
+            height: 150px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border: 2px solid #007bff;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            resize: vertical;
+            background: #2c2c2c;
+            color: #ffffff;
+        }
+
+        .color-controls {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        .color-picker {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .color-picker label {
+            font-size: 1.1rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .qrcode-btn {
+            padding: 0.8rem 2rem;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .generate-btn {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .save-btn {
+            background-color: #28a745;
+            color: white;
+        }
+
+        #qrOutput {
+            margin: 2rem auto;
+            padding: 20px; /* Added padding for white background */
+            background: white; /* White background for QR code */
+            border-radius: 15px;
+            display: inline-block;
+        }
+
+        /* Light mode styles */
+        body.light-mode {
+            background-color: #f8f9fa;
+            color: #212529;
+        }
+
+        body.light-mode #qrText {
+            background: #ffffff;
+            color: #212529;
+            border-color: #007bff;
+        }
+
+        body.light-mode .qrcode-btn {
+            background-color: #dc3545;
+        }
+
+        footer {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+    </style>
+</head>
+<body>
+    <button id="themeToggler">🌙</button>
+    
+    <div class="container">
+        <h1>Smart QR Generator</h1>
+        
+        <div class="qr-input-section">
+            <textarea 
+                id="qrText" 
+                placeholder="Enter your text/content here..."
+                autofocus
+            ></textarea>
+            
+            <div class="color-controls">
+                <div class="color-picker">
+                    <label for="fgColor">QR Color:</label>
+                    <input type="color" id="fgColor" value="#000000">
+                </div>
+                
+                <div class="color-picker">
+                    <label for="bgColor">Background:</label>
+                    <input type="color" id="bgColor" value="#ffffff">
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="qrcode-btn generate-btn" onclick="generateQR()">
+                Generate QR
+            </button>
+            <button class="qrcode-btn save-btn" onclick="saveQR()">
+                Save QR
+            </button>
+        </div>
+
+        <div id="qrOutput"></div>
+
+        <footer>
+            Powered by JGS Advanced QR Technology | Design By JGS LANKA CO.
+        </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        // Theme Toggler
+        const themeToggler = document.getElementById('themeToggler');
+        const body = document.body;
+
+        themeToggler.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            themeToggler.textContent = body.classList.contains('light-mode') ? '☀️' : '🌙';
+        });
+
+        // QR Code Generator
+        let qrInstance = null;
+
+        function generateQR() {
+            const text = document.getElementById('qrText').value;
+            const fgColor = document.getElementById('fgColor').value;
+            const bgColor = document.getElementById('bgColor').value;
+
+            if (!text) {
+                alert('Please enter some text to generate QR code!');
+                return;
+            }
+
+            const qrOutput = document.getElementById('qrOutput');
+            qrOutput.innerHTML = '';
+
+            qrInstance = new QRCode(qrOutput, {
+                text: text,
+                width: 200,
+                height: 200,
+                colorDark: fgColor,
+                colorLight: bgColor,
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        }
+
+        // Save QR Code
+        function saveQR() {
+            if (!qrInstance) {
+                alert('Please generate a QR code first!');
+                return;
+            }
+
+            const canvas = document.querySelector('#qrOutput canvas');
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL('image/png');
+            link.download = 'custom-qrcode.png';
+            link.click();
+        }
+    </script>
+</body>
+</html>
